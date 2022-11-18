@@ -1,13 +1,15 @@
 require_relative 'word.rb'
 require_relative 'casket.rb'
+require_relative 'save.rb'
 
 require 'colorize'
 
 class Gameplay 
-  attr_accessor :guesses, :word, :meaning
+  attr_accessor :guesses, :word, :meaning, :attempt_index, :casket
 
   def initialize
     @guesses = []
+    @attempt_index = 1
     obj = Word.new
     @word = obj.word
     begin
@@ -18,27 +20,39 @@ class Gameplay
   end
 
   def input
-    inp = get_char
-    if repeat?(inp)
-      puts "You've already guessed #{inp}, try something else"
-      inp = get_char
+    while true
+      puts 'Enter a char'
+      inp = gets.chomp
+      return inp if valid(inp) && !repeat?(inp)
+      save?(inp)
     end
-    inp
+
   end
 
   def repeat?(character)
-    true if guesses.any? { |char| char.uncolorize == character }
+    if guesses.any? { |char| char.uncolorize == character }
+      puts "You've already guessed #{character}, try something else"
+      true
+    end
   end
 
-  def get_char
-    puts 'Enter a character'
-    char = gets.chomp
-    if char.match(/[a-z]/) && char.length == 1
-      char
+  def valid(inp)
+    if inp.match(/[a-z]/) && inp.length == 1
+      true
     else
-      puts 'Enter a valid input'
-      get_char
+      puts 'Enter valid input'
     end
+  end
+
+  def save?(inp)
+    save if inp == "save"
+  end
+
+  /saves the game and exits the program/
+  def save
+    puts "Enter a name identifier to save your game"
+    Save.new(gets.chomp, word, meaning, guesses, attempt_index, casket)
+    exit
   end
 
   def hint
@@ -52,6 +66,7 @@ class Gameplay
 
   def instruction
     puts 'You have 10 guesses to determine the word'
+    puts 'Enter save at any point to save the game'
   end
 
   def update_guesses(char)
@@ -64,20 +79,23 @@ class Gameplay
   end
 
   def play
-    obj2 = Casket.new
-    obj2.casket(word)
+    obj = Casket.new(word)
+    obj.word_casket = casket if caller[0][/`.*'/][1..-2] == "resume_play"
+    obj.display
 
-    (1..10).each do |index|
+    (attempt_index..10).each do |index|
+      @attempt_index = index
       puts "Attempt #{index}"
       guessed_char = input
       update_guesses(guessed_char)
       show_guesses
-      obj2.update_casket(word, guessed_char)
-      if obj2.word_casket.join == word
+      @casket = obj.word_casket
+      obj.update_casket(word, guessed_char)
+      if obj.word_casket.join == word
         puts 'You did it'
         break
       end
     end
-    puts "Better luck next time, the word was #{word}" if obj2.word_casket.join != word
+    puts "Better luck next time, the word was #{word}" if obj.word_casket.join != word
   end
 end
