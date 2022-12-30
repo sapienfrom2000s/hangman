@@ -5,7 +5,8 @@ require_relative 'save.rb'
 require 'colorize'
 
 class Gameplay 
-  attr_accessor :guesses, :word, :meaning, :attempt_index, :casket
+  attr_writer :guesses, :word, :meaning, :attempt_index
+  attr_accessor :casket
 
   def initialize
     @guesses = []
@@ -17,6 +18,8 @@ class Gameplay
     rescue => exception
         initialize
     end
+    @casket = Casket.new(@word)
+    @casket.display
   end
 
   def input
@@ -30,7 +33,7 @@ class Gameplay
   end
 
   def repeat?(character)
-    if guesses.any? { |char| char.uncolorize == character }
+    if @guesses.any? { |char| char.uncolorize == character }
       puts "You've already guessed #{character}, try something else"
       true
     end
@@ -51,12 +54,12 @@ class Gameplay
   /saves the game and exits the program/
   def save
     puts "Enter a name identifier to save your game"
-    Save.new(gets.chomp, word, meaning, guesses, attempt_index, casket)
+    Save.new(gets.chomp, @word, @meaning, @guesses, @attempt_index, @casket.word)
     exit
   end
 
   def hint
-    puts meaning
+    puts @meaning
   end
 
   def welcome
@@ -70,32 +73,36 @@ class Gameplay
   end
 
   def update_guesses(char)
-    word.include?(char) ? guesses.push(char.green) : guesses.push(char.red)
+    @word.include?(char) ? @guesses.push(char.green) : @guesses.push(char.red)
   end
 
   def show_guesses
-    guesses.each { |guess| print guess }
+    @guesses.each { |guess| print guess }
     puts
   end
 
   def play
-    obj = Casket.new(word)
-    obj.word_casket = casket if caller[0][/`.*'/][1..-2] == "resume_play"
-    obj.display
-
-    (attempt_index..10).each do |index|
-      @attempt_index = index
-      puts "Attempt #{index}"
+    (@attempt_index..10).each do |index|
       guessed_char = input
+      puts "Attempt #{index}"
+      update_attempt_index(index)
       update_guesses(guessed_char)
       show_guesses
-      @casket = obj.word_casket
-      obj.update_casket(word, guessed_char)
-      if obj.word_casket.join == word
-        puts 'You did it'
-        break
-      end
+      @casket.update(@word, guessed_char)
+      break if win?
     end
-    puts "Better luck next time, the word was #{word}" if obj.word_casket.join != word
+    puts "Better luck next time, the word was #{@word}" if @casket.word.join != @word
+  end
+
+  def update_attempt_index(index)
+    @attempt_index = index
+  end
+
+  def win?
+    if @casket.word.join == @word
+      puts 'You did it'
+      return true
+    end
+    false
   end
 end

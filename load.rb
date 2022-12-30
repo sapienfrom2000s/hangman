@@ -1,6 +1,5 @@
 require_relative 'gameplay.rb'
 require 'yaml'
-require 'pry-byebug'
 
 class Load
 
@@ -14,7 +13,7 @@ class Load
         hangman.meaning = game_data[:meaning]
         hangman.word = game_data[:word]
         hangman.guesses = game_data[:guesses]
-        hangman.casket = game_data[:casket]
+        hangman.casket.word = game_data[:word_casket]
         hangman.attempt_index = game_data[:attempt_index]
         resume_play(hangman)
     end
