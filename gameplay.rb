@@ -26,7 +26,7 @@ class Gameplay
     while true
       puts 'Enter a char'
       inp = gets.chomp
-      return inp if valid(inp) && !repeat?(inp)
+      return inp if valid(inp)
       save?(inp)
     end
 
@@ -40,7 +40,7 @@ class Gameplay
   end
 
   def valid(inp)
-    if inp.match(/[a-z]/) && inp.length == 1
+    if inp.match(/^[a-z]$/) && !repeat?(inp)
       true
     else
       puts 'Enter valid input'
