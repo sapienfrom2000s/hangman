@@ -1,12 +1,15 @@
 require_relative 'word.rb'
 require_relative 'casket.rb'
 require_relative 'save.rb'
+require_relative 'header.rb'
 
 require 'colorize'
 
 class Gameplay 
   attr_writer :guesses, :word, :meaning, :attempt_index
   attr_accessor :casket
+
+  include Inaugration
 
   def initialize
     @guesses = []
@@ -29,7 +32,6 @@ class Gameplay
       return inp if valid(inp)
       save?(inp)
     end
-
   end
 
   def repeat?(character)
@@ -60,16 +62,6 @@ class Gameplay
 
   def hint
     puts @meaning
-  end
-
-  def welcome
-    print "Welcome to a variation of Hangman\nNote: 20-30% of time, it fails to fetch the
-     meaning, so rerun in that case\n "
-  end
-
-  def instruction
-    puts 'You have 10 guesses to determine the word'
-    puts 'Enter save at any point to save the game'
   end
 
   def update_guesses(char)
