@@ -1,7 +1,7 @@
 require_relative 'word.rb'
 require_relative 'casket.rb'
 require_relative 'save.rb'
-require_relative 'header.rb'
+require_relative 'inaugration.rb'
 
 require 'colorize'
 
@@ -30,7 +30,7 @@ class Gameplay
       puts 'Enter a char'
       inp = gets.chomp
       return inp if valid(inp)
-      save?(inp)
+      check_for_save_request(inp)
     end
   end
 
@@ -41,23 +41,17 @@ class Gameplay
     end
   end
 
-  def valid(inp)
-    if inp.match(/^[a-z]$/) && !repeat?(inp)
+  def valid(input)
+    if input.match(/^[a-z]$/) && !repeat?(input)
       true
     else
       puts 'Enter valid input'
     end
   end
 
-  def save?(inp)
-    save if inp == "save"
-  end
-
-  /saves the game and exits the program/
-  def save
-    puts "Enter a name identifier to save your game"
-    Save.new(gets.chomp, @word, @meaning, @guesses, @attempt_index, @casket.word)
-    exit
+  def check_for_save_request(input)
+    return unless input == "save"
+    Save.new(@word, @meaning, @guesses, @attempt_index, @casket.word)
   end
 
   def hint
