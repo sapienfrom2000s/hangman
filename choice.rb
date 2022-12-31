@@ -3,8 +3,7 @@ require_relative 'load.rb'
 
 class Choice 
     def newgame_or_loadgame
-      puts 'Press 1 to play a new game and 2 to load a saved game'
-      puts 'Enter save at any point to save the game'
+
       input = get_a_valid_input
   
       case input
@@ -17,9 +16,7 @@ class Choice
 
     def new_game
       hangman = Gameplay.new
-      hangman.welcome
       hangman.hint
-      hangman.instruction
       hangman.play
     end
 

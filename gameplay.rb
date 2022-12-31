@@ -1,15 +1,12 @@
 require_relative 'word.rb'
 require_relative 'casket.rb'
 require_relative 'save.rb'
-require_relative 'inaugration.rb'
 
 require 'colorize'
 
 class Gameplay 
   attr_writer :guesses, :word, :meaning, :attempt_index
   attr_accessor :casket
-
-  include Inaugration
 
   def initialize
     @guesses = []
