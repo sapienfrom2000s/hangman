@@ -5,8 +5,12 @@ class Word
   attr_accessor :word, :meaning
 
   def initialize
-    @word = get_a_word
-    @meaning = get_meaning(word)
+    @word = get_a_word 
+    begin
+      @meaning = get_meaning(word) 
+    rescue => exception
+      initialize
+  end
   end
 
   def fetch_words

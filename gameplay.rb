@@ -16,11 +16,7 @@ class Gameplay
     @attempt_index = 1
     obj = Word.new
     @word = obj.word
-    begin
-        @meaning = obj.meaning 
-    rescue => exception
-        initialize
-    end
+    @meaning = obj.meaning
     @casket = Casket.new(@word)
     @casket.display
   end
