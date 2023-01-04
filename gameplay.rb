@@ -1,50 +1,23 @@
 require_relative 'word.rb'
+require_relative 'input_manager.rb'
 require_relative 'casket.rb'
 require_relative 'save.rb'
 
 require 'colorize'
 
 class Gameplay 
-  attr_writer :guesses, :word, :meaning, :attempt_index
-  attr_accessor :casket
+  attr_accessor :guesses, :word, :meaning, :attempt_index, :casket
+  attr_reader :input_manager
 
   def initialize
     @guesses = []
     @attempt_index = 1
     obj = Word.new
     @word = obj.word
+    @input_manager = Input_Manager.new(self)
     @meaning = obj.meaning
     @casket = Casket.new(@word)
     @casket.display
-  end
-
-  def input
-    while true
-      puts 'Enter a char'
-      inp = gets.chomp
-      return inp if valid(inp)
-      check_for_save_request(inp)
-    end
-  end
-
-  def repeat?(character)
-    if @guesses.any? { |char| char.uncolorize == character }
-      puts "You've already guessed #{character}, try something else"
-      true
-    end
-  end
-
-  def valid(input)
-    if input.match(/^[a-z]$/) && !repeat?(input)
-      true
-    else
-      puts 'Enter valid input'
-    end
-  end
-
-  def check_for_save_request(input)
-    return unless input == "save"
-    Save.new(@word, @meaning, @guesses, @attempt_index, @casket.word)
   end
 
   def hint
@@ -62,7 +35,7 @@ class Gameplay
 
   def play
     (@attempt_index..10).each do |index|
-      guessed_char = input
+      guessed_char = input_manager.get_input
       puts "Attempt #{index}"
       update_attempt_index(index)
       update_guesses(guessed_char)
