@@ -7,15 +7,14 @@ require 'colorize'
 
 class Gameplay 
   attr_accessor :guesses, :word, :meaning, :attempt_index, :casket
-  attr_reader :input_manager
 
   def initialize
     @guesses = []
     @attempt_index = 1
-    obj = Word.new
-    @word = obj.word
+    word_forger = Word.new
+    @word = word_forger.word
     @input_manager = Input_Manager.new(self)
-    @meaning = obj.meaning
+    @meaning = word_forger.meaning
     @casket = Casket.new(@word)
     @casket.display
   end
@@ -35,7 +34,7 @@ class Gameplay
 
   def play
     (@attempt_index..10).each do |index|
-      guessed_char = input_manager.get_input
+      guessed_char = @input_manager.get_input
       puts "Attempt #{index}"
       update_attempt_index(index)
       update_guesses(guessed_char)
